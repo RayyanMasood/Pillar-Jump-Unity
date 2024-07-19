@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class PlayerController_re : MonoBehaviour
 {
@@ -48,11 +50,15 @@ public class PlayerController_re : MonoBehaviour
     {
         if (!IsInCameraBounds())
         {
-            ResetPlayerPosition();
+            Respawn();
         }
 
         if (!isLanded || isLaunched)
         {
+            if (Input.GetMouseButtonDown(0) && !isDragging)
+            {
+                RotatePlayer();
+            }
             return;
         }
 
@@ -100,8 +106,6 @@ public class PlayerController_re : MonoBehaviour
 
         // Recheck the last trigger
         RecheckLastTrigger();
-
-        
     }
 
     private void RecheckLastTrigger()
@@ -114,15 +118,34 @@ public class PlayerController_re : MonoBehaviour
 
     private void CheckAlignment(Collider2D other)
     {
-        // Calculate the number of increments needed for alignment check
-        int increments = Mathf.RoundToInt(360f / angleIncrement);
+        // Calculate the player's current rotation and the pillar's top rotation
+        float playerRotation = Mathf.Round(transform.eulerAngles.z);
+        float pillarTopRotation = Mathf.Round(other.transform.eulerAngles.z);
 
-        // Check if the player's rotation matches any of the acceptable angles within the margin of error
-        bool isAligned = false;
-        for (int i = 0; i < increments; i++)
+        Debug.Log("Player Rotation at time of contact: " + playerRotation + " | Pillar Collider rotation: " + pillarTopRotation);
+
+        // Define the sets of acceptable angles
+        HashSet<float> set1 = new HashSet<float> { 0, 90, 180, 270, 360 };
+        HashSet<float> set2 = new HashSet<float> { 45, 135, 225, 315 };
+
+        // Determine which set the pillar's top rotation belongs to
+        HashSet<float> acceptableAngles = set1.Contains(pillarTopRotation) ? set1 : set2.Contains(pillarTopRotation) ? set2 : null;
+
+        Debug.Log("Acceptable Ranges: " + (acceptableAngles != null ? string.Join(", ", acceptableAngles) : "None"));
+
+        if (acceptableAngles == null)
         {
-            float targetAngle = Mathf.DeltaAngle(transform.eulerAngles.z, other.transform.eulerAngles.z + i * angleIncrement);
-            if (Mathf.Abs(targetAngle) < stickingMargin)
+            Player.constraints = RigidbodyConstraints2D.None; // Allow the player to adjust position
+            return;
+        }
+
+
+        // Check if the player's rotation matches any of the extended acceptable angles within the margin of error
+        bool isAligned = false;
+
+        foreach (float angle in acceptableAngles)
+        {
+            if (Mathf.Abs(Mathf.DeltaAngle(playerRotation, angle)) <= stickingMargin)
             {
                 isAligned = true;
                 break;
@@ -137,14 +160,16 @@ public class PlayerController_re : MonoBehaviour
             isLaunched = false;
             lastPillarTouched = other;
 
-            // Align the player's rotation with the collider's rotation
-            transform.rotation = Quaternion.Euler(0, 0, other.transform.eulerAngles.z);
+            // Align the player's rotation with the closest acceptable angle
+            transform.rotation = Quaternion.Euler(0, 0, Mathf.RoundToInt(playerRotation / angleIncrement) * angleIncrement);
         }
         else
         {
             Player.constraints = RigidbodyConstraints2D.None; // Allow the player to adjust position
         }
     }
+
+
 
     private bool IsInCameraBounds()
     {
@@ -170,7 +195,7 @@ public class PlayerController_re : MonoBehaviour
         }
     }
 
-    private void ResetPlayerPosition()
+    private void Respawn()
     {
         transform.position = initialPosition;
         transform.rotation = initialRotation;
@@ -185,6 +210,6 @@ public class PlayerController_re : MonoBehaviour
     public void RotatePlayer()
     {
         transform.Rotate(0, 0, angleIncrement);
-        RecheckLastTrigger(); // Recheck alignment after rotating
+        //RecheckLastTrigger(); // Recheck alignment after rotating
     }
 }
