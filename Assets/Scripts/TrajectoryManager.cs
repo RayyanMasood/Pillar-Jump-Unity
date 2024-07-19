@@ -40,6 +40,7 @@ public class TrajectoryManager : MonoBehaviour
 
     public void DrawLine(Vector2 start, Vector2 end, LineRenderer lineRenderer, float lineWidth, Color lineColor)
     {
+        lineRenderer.positionCount = 2; // Ensure the line renderer has 2 positions
         lineRenderer.startWidth = lineWidth;
         lineRenderer.endWidth = lineWidth;
         lineRenderer.startColor = lineColor;
