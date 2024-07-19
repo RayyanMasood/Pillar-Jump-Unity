@@ -70,9 +70,6 @@ public class PlayerShoot : MonoBehaviour
             lineRenderer.positionCount = 2; // Ensure the line renderer has 2 positions
             isDragging = true;
 
-            // Unfreeze the player's constraints to allow movement
-            //rb.constraints = RigidbodyConstraints2D.None;
-
             // Detach from any parent platform
             transform.SetParent(null);
         }
@@ -132,6 +129,8 @@ public class PlayerShoot : MonoBehaviour
 
         // Reset rotation to initial rotation
         transform.rotation = initialRotation;
+
+        isLaunchable = false;
     }
 
     void CreateDots()
@@ -198,13 +197,7 @@ public class PlayerShoot : MonoBehaviour
         }
     }
 
-    void OnTriggerExit2D(Collider2D other)
-    {
-        if (other.CompareTag("Top Collider"))
-        {
-            isLaunchable = false;
-        }
-    }
+    
 
     bool IsInCameraBounds()
     {
