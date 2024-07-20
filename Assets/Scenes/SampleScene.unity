@@ -869,10 +869,11 @@ MonoBehaviour:
   Player: {fileID: 588226591}
   launchLine: {fileID: 361265750}
   maxLaunchForce: 20
-  stickingMargin: 10
+  stickingMargin: 5
   lineWidth: 0.1
   lineColor: {r: 1, g: 1, b: 1, a: 1}
   angleIncrement: 45
+  fpErrorMargin: 0.35
 --- !u!1001 &678268521
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -993,8 +994,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   dotPrefab: {fileID: 3680974940291160180, guid: 89959d0134cc15b4c969c576b587af0d, type: 3}
-  numberOfDots: 20
-  dotSpacing: 0.1
+  numberOfDots: 300
+  dotSpacing: 0.05
   dotTransparency: 0.5
 --- !u!114 &866670233
 MonoBehaviour:

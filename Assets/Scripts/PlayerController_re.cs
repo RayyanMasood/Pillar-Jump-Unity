@@ -1,5 +1,8 @@
 using System.Collections;
+using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class PlayerController_re : MonoBehaviour
 {
@@ -7,13 +10,14 @@ public class PlayerController_re : MonoBehaviour
     public LineRenderer launchLine;
     public float maxLaunchForce = 20f;
     public float stickingMargin = 0.01f;
-    public float lineWidth = 0.1f;
-    public Color lineColor = Color.white;
-    public float angleIncrement = 45f;
+    public float lineWidth = 0.1f;  // Expose line width
+    public Color lineColor = Color.white;  // Expose line color
+    public float angleIncrement = 45f;  // Angle increment for rotation and alignment
 
     private Vector2 startPos;
     private Vector2 endPos;
 
+    // states
     private bool isLanded = false;
     private bool isLaunched = false;
     private bool isDragging = false;
@@ -22,26 +26,30 @@ public class PlayerController_re : MonoBehaviour
     private Quaternion initialRotation;
     private Camera mainCamera;
 
+    // Reference to the last pillar touched
     private Collider2D lastPillarTouched;
 
+    // Start is called before the first frame update
     void Start()
     {
         initialPosition = transform.position;
         initialRotation = transform.rotation;
         mainCamera = Camera.main;
         Player.constraints = RigidbodyConstraints2D.None;
-        Player.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
 
+        // Set initial line width
         launchLine.startWidth = lineWidth;
         launchLine.endWidth = lineWidth;
+
+        // Ensure the material color is set
         launchLine.material.color = lineColor;
     }
 
+    // Update is called once per frame
     void Update()
     {
         if (!IsInCameraBounds())
         {
-            Debug.Log("Player out of camera bounds. Respawning...");
             Respawn();
         }
 
@@ -49,7 +57,6 @@ public class PlayerController_re : MonoBehaviour
         {
             if (Input.GetMouseButtonDown(0) && !isDragging)
             {
-                Debug.Log("Rotating player...");
                 RotatePlayer();
             }
             return;
@@ -58,9 +65,8 @@ public class PlayerController_re : MonoBehaviour
         if (Input.GetMouseButtonDown(0))
         {
             startPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            launchLine.positionCount = 2;
+            launchLine.positionCount = 2; // Ensure the line renderer has 2 positions
             isDragging = true;
-            Debug.Log("Start dragging at position: " + startPos);
         }
 
         if (isDragging)
@@ -69,7 +75,6 @@ public class PlayerController_re : MonoBehaviour
             TrajectoryManager.Instance.DrawLine(startPos, endPos, launchLine, lineWidth, lineColor);
             TrajectoryManager.Instance.DisplayTrajectory(startPos, endPos, transform.position, Player, maxLaunchForce);
             UIManager.Instance.UpdateAimIndicator(TrajectoryManager.Instance.GetTrajectoryEndPosition());
-            Debug.Log("Dragging to position: " + endPos);
         }
 
         if (isDragging && Input.GetMouseButtonUp(0))
@@ -78,8 +83,7 @@ public class PlayerController_re : MonoBehaviour
             ShootPlayer(startPos, endPos);
             launchLine.positionCount = 0;
             TrajectoryManager.Instance.HideDots();
-            isDragging = false;
-            Debug.Log("Shoot player from: " + startPos + " to: " + endPos);
+            isDragging = false; // Ensure dragging state is reset
         }
     }
 
@@ -90,14 +94,17 @@ public class PlayerController_re : MonoBehaviour
         Vector2 force = direction.normalized * Mathf.Clamp(distance, 0, maxLaunchForce);
         Player.velocity = force;
         isLaunched = true;
-        Debug.Log("Player launched with force: " + force);
 
+        // Start the coroutine to check if the player has launched
         StartCoroutine(CheckIfLaunched());
     }
 
     private IEnumerator CheckIfLaunched()
     {
+        // Wait for a short duration
         yield return new WaitForSeconds(0.02f);
+
+        // Recheck the last trigger
         RecheckLastTrigger();
     }
 
@@ -105,52 +112,64 @@ public class PlayerController_re : MonoBehaviour
     {
         if (lastPillarTouched != null)
         {
-            Debug.Log("Rechecking alignment with the last pillar touched.");
             CheckAlignment(lastPillarTouched);
         }
     }
 
     private void CheckAlignment(Collider2D other)
     {
-        Vector2 contactPoint = other.ClosestPoint(transform.position);
-        Vector2 direction = contactPoint - (Vector2)transform.position;
-        Vector2 localNormal = transform.InverseTransformDirection(direction.normalized);
+        // Calculate the player's current rotation and the pillar's top rotation
+        float playerRotation = Mathf.Round(transform.eulerAngles.z);
+        float pillarTopRotation = Mathf.Round(other.transform.eulerAngles.z);
 
-        float angle = Mathf.Atan2(localNormal.y, localNormal.x) * Mathf.Rad2Deg;
-        bool isFlatContact = Mathf.Abs(Mathf.Abs(angle) % 90) <= stickingMargin || Mathf.Abs(Mathf.Abs(angle) % 90 - 90) <= stickingMargin;
+        Debug.Log("Player Rotation at time of contact: " + playerRotation + " | Pillar Collider rotation: " + pillarTopRotation);
 
-        Debug.Log("Contact point: " + contactPoint + ", Direction: " + direction + ", Local normal: " + localNormal + ", Angle: " + angle + ", Flat contact: " + isFlatContact);
+        // Define the sets of acceptable angles
+        HashSet<float> set1 = new HashSet<float> { 0, 90, 180, 270, 360 };
+        HashSet<float> set2 = new HashSet<float> { 45, 135, 225, 315 };
 
-        if (isFlatContact)
+        // Determine which set the pillar's top rotation belongs to
+        HashSet<float> acceptableAngles = set1.Contains(pillarTopRotation) ? set1 : set2.Contains(pillarTopRotation) ? set2 : null;
+
+        Debug.Log("Acceptable Ranges: " + (acceptableAngles != null ? string.Join(", ", acceptableAngles) : "None"));
+
+        if (acceptableAngles == null)
         {
-            StickToSurface(other);
+            Player.constraints = RigidbodyConstraints2D.None; // Allow the player to adjust position
+            return;
+        }
+
+
+        // Check if the player's rotation matches any of the extended acceptable angles within the margin of error
+        bool isAligned = false;
+
+        foreach (float angle in acceptableAngles)
+        {
+            if (Mathf.Abs(Mathf.DeltaAngle(playerRotation, angle)) <= stickingMargin)
+            {
+                isAligned = true;
+                break;
+            }
+        }
+
+        if (isAligned)
+        {
+            Debug.Log("Proper angle");
+            Player.constraints = RigidbodyConstraints2D.FreezeAll; // Freeze position and rotation
+            isLanded = true;
+            isLaunched = false;
+            lastPillarTouched = other;
+
+            // Align the player's rotation with the closest acceptable angle
+            transform.rotation = Quaternion.Euler(0, 0, Mathf.RoundToInt(playerRotation / angleIncrement) * angleIncrement);
         }
         else
         {
-            Player.constraints = RigidbodyConstraints2D.None;
-            Debug.Log("Not a flat contact. Player can adjust position.");
+            Player.constraints = RigidbodyConstraints2D.None; // Allow the player to adjust position
         }
     }
 
-    private void StickToSurface(Collider2D surface)
-    {
-        Player.velocity = Vector2.zero;
-        Player.angularVelocity = 0;
-        Player.constraints = RigidbodyConstraints2D.FreezeAll;
-        isLanded = true;
-        isLaunched = false;
-        lastPillarTouched = surface;
 
-        Debug.Log("Sticking to surface: " + surface.name);
-        AlignRotation(surface.transform);
-    }
-
-    private void AlignRotation(Transform surfaceTransform)
-    {
-        float surfaceRotation = surfaceTransform.eulerAngles.z;
-        transform.rotation = Quaternion.Euler(0, 0, Mathf.Round(surfaceRotation / angleIncrement) * angleIncrement);
-        Debug.Log("Aligning rotation to surface. Surface rotation: " + surfaceRotation + ", Player rotation: " + transform.rotation.eulerAngles.z);
-    }
 
     private bool IsInCameraBounds()
     {
@@ -162,8 +181,8 @@ public class PlayerController_re : MonoBehaviour
     {
         if (other.CompareTag("Top Collider"))
         {
-            lastPillarTouched = other;
-            Debug.Log("Entered trigger with: " + other.name);
+            Debug.Log("Touched top collider");
+            //lastPillarTouched = other;
             CheckAlignment(other);
         }
     }
@@ -172,7 +191,6 @@ public class PlayerController_re : MonoBehaviour
     {
         if (other.CompareTag("Top Collider") && other == lastPillarTouched)
         {
-            Debug.Log("Exited trigger with: " + other.name);
             lastPillarTouched = null;
         }
     }
@@ -186,12 +204,12 @@ public class PlayerController_re : MonoBehaviour
         Player.constraints = RigidbodyConstraints2D.None;
         GameManager.Instance.IncrementRespawnCount();
         isLanded = false;
-        Debug.Log("Player respawned to initial position and rotation.");
     }
 
+    // Method to rotate the player by angleIncrement degrees
     public void RotatePlayer()
     {
         transform.Rotate(0, 0, angleIncrement);
-        Debug.Log("Player rotated to: " + transform.rotation.eulerAngles.z);
+        //RecheckLastTrigger(); // Recheck alignment after rotating
     }
 }
