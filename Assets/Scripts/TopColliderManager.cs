@@ -3,6 +3,8 @@ using UnityEngine;
 public class TopColliderManager : MonoBehaviour
 {
     public float colliderWidth = 1.0f;
+    public float colliderHeight = 0.2f;
+    public Vector2 positionOffset = Vector2.zero;
 
     void Start()
     {
@@ -34,7 +36,12 @@ public class TopColliderManager : MonoBehaviour
                         float adjustedWidth = Mathf.Min(colliderWidth, pillarWidth);
                         Vector2 size = topCollider.size;
                         size.x = adjustedWidth;
+                        size.y = colliderHeight;
                         topCollider.size = size;
+
+                        // Adjust the position based on the parent's position and the offset
+                        Vector2 parentPosition = parentTransform.position;
+                        topCollider.offset = positionOffset;
                     }
                 }
             }
