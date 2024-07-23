@@ -1,8 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
 using UnityEngine;
-using UnityEngine.UIElements;
 
 public class PlayerController_re : MonoBehaviour
 {
@@ -73,8 +71,8 @@ public class PlayerController_re : MonoBehaviour
         {
             endPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             TrajectoryManager.Instance.DrawLine(startPos, endPos, launchLine, lineWidth, lineColor);
-            TrajectoryManager.Instance.DisplayTrajectory(startPos, endPos, transform.position, Player, maxLaunchForce);
-            UIManager.Instance.UpdateAimIndicator(TrajectoryManager.Instance.GetTrajectoryEndPosition());
+            Vector2 hitPosition = TrajectoryManager.Instance.DisplayTrajectory(startPos, endPos, transform.position, Player, maxLaunchForce);
+            UIManager.Instance.UpdateAimIndicator(hitPosition);
         }
 
         if (isDragging && Input.GetMouseButtonUp(0))
@@ -82,7 +80,7 @@ public class PlayerController_re : MonoBehaviour
             Player.constraints = RigidbodyConstraints2D.None;
             ShootPlayer(startPos, endPos);
             launchLine.positionCount = 0;
-            TrajectoryManager.Instance.HideDots();
+            TrajectoryManager.Instance.HideDots(); // Ensure dots are hidden after shooting
             isDragging = false; // Ensure dragging state is reset
         }
     }
@@ -139,7 +137,6 @@ public class PlayerController_re : MonoBehaviour
             return;
         }
 
-
         // Check if the player's rotation matches any of the extended acceptable angles within the margin of error
         bool isAligned = false;
 
@@ -169,8 +166,6 @@ public class PlayerController_re : MonoBehaviour
         }
     }
 
-
-
     private bool IsInCameraBounds()
     {
         Vector3 viewportPosition = mainCamera.WorldToViewportPoint(transform.position);
@@ -182,7 +177,6 @@ public class PlayerController_re : MonoBehaviour
         if (other.CompareTag("Top Collider"))
         {
             Debug.Log("Touched top collider");
-            //lastPillarTouched = other;
             CheckAlignment(other);
         }
     }
@@ -210,6 +204,5 @@ public class PlayerController_re : MonoBehaviour
     public void RotatePlayer()
     {
         transform.Rotate(0, 0, angleIncrement);
-        //RecheckLastTrigger(); // Recheck alignment after rotating
     }
 }

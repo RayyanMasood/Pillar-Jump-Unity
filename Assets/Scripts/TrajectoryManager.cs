@@ -5,11 +5,13 @@ public class TrajectoryManager : MonoBehaviour
 {
     public static TrajectoryManager Instance { get; private set; }
     public GameObject dotPrefab;
+    public bool enableDottedTrajectory = false; // Toggle for enabling/disabling the dotted trajectory
     public int numberOfDots = 20;
     public float dotSpacing = 0.1f;
     public float dotTransparency = 0.5f;
 
     private List<GameObject> trajectoryDots = new List<GameObject>();
+    private GameObject currentDot; // Keep track of the current collision dot
 
     private void Awake()
     {
@@ -50,7 +52,7 @@ public class TrajectoryManager : MonoBehaviour
         lineRenderer.SetPosition(1, end);
     }
 
-    public void DisplayTrajectory(Vector2 start, Vector2 end, Vector2 initialPosition, Rigidbody2D rb, float maxLaunchForce)
+    public Vector2 DisplayTrajectory(Vector2 start, Vector2 end, Vector2 initialPosition, Rigidbody2D rb, float maxLaunchForce)
     {
         Vector2 direction = start - end;
         float distance = direction.magnitude;
@@ -58,13 +60,70 @@ public class TrajectoryManager : MonoBehaviour
 
         Vector2 pos = initialPosition;
         Vector2 velocity = force;
+        Vector2 gravity = Physics2D.gravity * rb.gravityScale;
 
-        for (int i = 0; i < numberOfDots; i++)
+        float timeStep = 0.02f; // smaller time steps for more accuracy
+
+        if (enableDottedTrajectory)
         {
-            float t = i * dotSpacing;
-            Vector2 dotPos = pos + velocity * t + 0.5f * Physics2D.gravity * (t * t);
-            trajectoryDots[i].SetActive(true);
-            trajectoryDots[i].transform.position = dotPos;
+            for (int i = 0; i < numberOfDots; i++)
+            {
+                float t = i * dotSpacing;
+                Vector2 dotPos = pos + velocity * t + 0.5f * gravity * (t * t);
+                trajectoryDots[i].SetActive(true);
+                trajectoryDots[i].transform.position = dotPos;
+            }
+        }
+        else
+        {
+            HideDots();
+        }
+
+        for (float t = 0; t < 5f; t += timeStep) // Simulate for 5 seconds with small time steps
+        {
+            RaycastHit2D hit = Physics2D.Raycast(pos, velocity, velocity.magnitude * timeStep, ~LayerMask.GetMask("Player"));
+            if (hit.collider != null)
+            {
+                Debug.Log("Raycast hit: " + hit.collider.name + " at position: " + hit.point);
+                CreateDot(hit.point); // Create a dot at the collision point
+                return hit.point;
+            }
+
+            pos += velocity * timeStep;
+            velocity += gravity * timeStep;
+        }
+
+        Debug.Log("Raycast did not hit any collider.");
+        DestroyDot(); // Hide the dot if no collision
+        return pos;
+    }
+
+    private void CreateDot(Vector2 position)
+    {
+        // Destroy the previous dot if it exists
+        if (currentDot != null)
+        {
+            Destroy(currentDot);
+        }
+
+        // Create and store the new dot
+        if (dotPrefab != null)
+        {
+            currentDot = Instantiate(dotPrefab, position, Quaternion.identity);
+            currentDot.SetActive(true);
+        }
+        else
+        {
+            Debug.LogError("Dot Prefab is not assigned in the TrajectoryManager.");
+        }
+    }
+
+    private void DestroyDot()
+    {
+        if (currentDot != null)
+        {
+            Destroy(currentDot);
+            currentDot = null;
         }
     }
 
@@ -74,10 +133,5 @@ public class TrajectoryManager : MonoBehaviour
         {
             dot.SetActive(false);
         }
-    }
-
-    public Vector2 GetTrajectoryEndPosition()
-    {
-        return trajectoryDots[numberOfDots - 1].transform.position;
     }
 }
