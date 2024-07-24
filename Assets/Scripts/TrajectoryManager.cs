@@ -82,7 +82,7 @@ public class TrajectoryManager : MonoBehaviour
         for (float t = 0; t < 5f; t += timeStep) // Simulate for 5 seconds with small time steps
         {
             RaycastHit2D hit = Physics2D.Raycast(pos, velocity, velocity.magnitude * timeStep, ~LayerMask.GetMask("Player"));
-            if (hit.collider != null)
+            if (hit.collider != null && !hit.collider.CompareTag("HookInfluence"))
             {
                 Debug.Log("Raycast hit: " + hit.collider.name + " at position: " + hit.point);
                 CreateDot(hit.point); // Create a dot at the collision point

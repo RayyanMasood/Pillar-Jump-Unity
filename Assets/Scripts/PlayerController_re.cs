@@ -19,6 +19,7 @@ public class PlayerController_re : MonoBehaviour
     private bool isLanded = false;
     private bool isLaunched = false;
     private bool isDragging = false;
+    private bool inInfluence = false;
 
     private Vector3 initialPosition;
     private Quaternion initialRotation;
@@ -179,6 +180,10 @@ public class PlayerController_re : MonoBehaviour
             Debug.Log("Touched top collider");
             CheckAlignment(other);
         }
+        if (other.CompareTag("HookInfluence"))
+        {
+            inInfluence = true;
+        }
     }
 
     void OnTriggerExit2D(Collider2D other)
@@ -186,6 +191,10 @@ public class PlayerController_re : MonoBehaviour
         if (other.CompareTag("Top Collider") && other == lastPillarTouched)
         {
             lastPillarTouched = null;
+        }
+        if (other.CompareTag("HookInfluence"))
+        {
+            inInfluence = false;
         }
     }
 
@@ -202,7 +211,11 @@ public class PlayerController_re : MonoBehaviour
 
     // Method to rotate the player by angleIncrement degrees
     public void RotatePlayer()
-    {
-        transform.Rotate(0, 0, angleIncrement);
+    {   
+        if (!inInfluence)
+        {
+           transform.Rotate(0, 0, angleIncrement);
+
+        }
     }
 }
