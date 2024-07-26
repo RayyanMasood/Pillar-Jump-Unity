@@ -24,6 +24,7 @@ public class PlayerController_re : MonoBehaviour
     private Vector3 initialPosition;
     private Quaternion initialRotation;
     private Camera mainCamera;
+    private float initialGravity;
 
     // Reference to the last pillar touched
     private Collider2D lastPillarTouched;
@@ -31,6 +32,7 @@ public class PlayerController_re : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        initialGravity = Player.gravityScale;
         initialPosition = transform.position;
         initialRotation = transform.rotation;
         mainCamera = Camera.main;
@@ -94,6 +96,9 @@ public class PlayerController_re : MonoBehaviour
         Player.velocity = force;
         isLaunched = true;
 
+        // Detach from the parent pillar
+        transform.SetParent(null);
+
         // Start the coroutine to check if the player has launched
         StartCoroutine(CheckIfLaunched());
     }
@@ -117,6 +122,14 @@ public class PlayerController_re : MonoBehaviour
 
     private void CheckAlignment(Collider2D other)
     {
+        // Get the Pillar component from the top_collider's parent
+        Pillar pillar = other.transform.parent.GetComponent<Pillar>();
+        if (pillar != null && !pillar.isActive)
+        {
+            Respawn();
+            return;
+        }
+
         // Calculate the player's current rotation and the pillar's top rotation
         float playerRotation = Mathf.Round(transform.eulerAngles.z);
         float pillarTopRotation = Mathf.Round(other.transform.eulerAngles.z);
@@ -160,6 +173,9 @@ public class PlayerController_re : MonoBehaviour
 
             // Align the player's rotation with the closest acceptable angle
             transform.rotation = Quaternion.Euler(0, 0, Mathf.RoundToInt(playerRotation / angleIncrement) * angleIncrement);
+
+            // Set the player as a child of the pillar
+            transform.SetParent(other.transform.parent);
         }
         else
         {
@@ -174,7 +190,7 @@ public class PlayerController_re : MonoBehaviour
     }
 
     void OnTriggerEnter2D(Collider2D other)
-    {
+    {   
         if (other.CompareTag("Top Collider"))
         {
             Debug.Log("Touched top collider");
@@ -200,22 +216,25 @@ public class PlayerController_re : MonoBehaviour
 
     private void Respawn()
     {
-        transform.position = initialPosition;
-        transform.rotation = initialRotation;
+        transform.SetPositionAndRotation(initialPosition, initialRotation);
         Player.velocity = Vector2.zero;
         Player.angularVelocity = 0f;
+        Player.gravityScale = initialGravity;
+        Debug.Log("Set gravity back");
+
         Player.constraints = RigidbodyConstraints2D.None;
+        transform.SetParent(null); // Detach from any parent
         GameManager.Instance.IncrementRespawnCount();
         isLanded = false;
+        
     }
 
     // Method to rotate the player by angleIncrement degrees
     public void RotatePlayer()
-    {   
+    {
         if (!inInfluence)
         {
-           transform.Rotate(0, 0, angleIncrement);
-
+            transform.Rotate(0, 0, angleIncrement);
         }
     }
 }

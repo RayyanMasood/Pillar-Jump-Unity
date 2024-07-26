@@ -33,6 +33,7 @@ public class TrajectoryManager : MonoBehaviour
         {
             GameObject dot = Instantiate(dotPrefab);
             dot.SetActive(false);
+            dot.tag = "TrajectoryDot"; // Tag the dots for detection
             Color dotColor = dot.GetComponent<SpriteRenderer>().color;
             dotColor.a = dotTransparency;
             dot.GetComponent<SpriteRenderer>().color = dotColor;
@@ -82,7 +83,7 @@ public class TrajectoryManager : MonoBehaviour
         for (float t = 0; t < 5f; t += timeStep) // Simulate for 5 seconds with small time steps
         {
             RaycastHit2D hit = Physics2D.Raycast(pos, velocity, velocity.magnitude * timeStep, ~LayerMask.GetMask("Player"));
-            if (hit.collider != null && !hit.collider.CompareTag("HookInfluence"))
+            if (hit.collider != null && !hit.collider.isTrigger)
             {
                 Debug.Log("Raycast hit: " + hit.collider.name + " at position: " + hit.point);
                 CreateDot(hit.point); // Create a dot at the collision point
@@ -132,6 +133,22 @@ public class TrajectoryManager : MonoBehaviour
         foreach (var dot in trajectoryDots)
         {
             dot.SetActive(false);
+        }
+        DestroyDot();
+    }
+
+    public void FlipDots(bool flip)
+    {
+        foreach (var dot in trajectoryDots)
+        {
+            if (flip)
+            {
+                dot.transform.localScale = new Vector3(dot.transform.localScale.x, -Mathf.Abs(dot.transform.localScale.y), dot.transform.localScale.z);
+            }
+            else
+            {
+                dot.transform.localScale = new Vector3(dot.transform.localScale.x, Mathf.Abs(dot.transform.localScale.y), dot.transform.localScale.z);
+            }
         }
     }
 }
