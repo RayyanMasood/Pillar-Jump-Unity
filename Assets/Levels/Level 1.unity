@@ -826,11 +826,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4339301008504788657, guid: deef525fe12c80040a26fb900a9a06f0, type: 3}
       propertyPath: moveSpeed
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4339301008504788657, guid: deef525fe12c80040a26fb900a9a06f0, type: 3}
       propertyPath: moveDistance
-      value: 3
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6785009560967785098, guid: deef525fe12c80040a26fb900a9a06f0, type: 3}
       propertyPath: m_Size.x
