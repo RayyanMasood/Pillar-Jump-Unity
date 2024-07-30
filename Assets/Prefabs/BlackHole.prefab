@@ -93,6 +93,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5896693387613363071}
+  - component: {fileID: 546670273991573180}
   m_Layer: 0
   m_Name: BlackHole
   m_TagString: Untagged
@@ -108,8 +109,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5817847034418912265}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 3.2713509, y: -1.0894488, z: 0.016132947}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -344.5917, y: -297.13123, z: 3.4516966}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -118,6 +119,23 @@ Transform:
   - {fileID: 7704652147607114144}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &546670273991573180
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5817847034418912265}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ac2d996f96bc53f4894e2aa574a1d623, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  player: {fileID: 0}
+  influenceRange: 7
+  intensity: 50
+  distanceToPlayer: 0
+  offset: {x: -3.27, y: 1}
 --- !u!1 &7438285209893468423
 GameObject:
   m_ObjectHideFlags: 0
