@@ -16,15 +16,15 @@ public class PlayerController_re : MonoBehaviour
     private Vector2 endPos;
 
     // states
-    private bool isLanded = false;
+    public bool isLanded = false;
     private bool isLaunched = false;
     private bool isDragging = false;
     private bool inInfluence = false;
 
-    private Vector3 initialPosition;
-    private Quaternion initialRotation;
+    public Vector3 initialPosition;
+    public Quaternion initialRotation;
     private Camera mainCamera;
-    private float initialGravity;
+    public float initialGravity;
 
     // Reference to the last pillar touched
     private Collider2D lastPillarTouched;
@@ -95,6 +95,7 @@ public class PlayerController_re : MonoBehaviour
         Vector2 force = direction.normalized * Mathf.Clamp(distance, 0, maxLaunchForce);
         Player.velocity = force;
         isLaunched = true;
+        isLanded = false;
 
         // Detach from the parent pillar
         transform.SetParent(null);

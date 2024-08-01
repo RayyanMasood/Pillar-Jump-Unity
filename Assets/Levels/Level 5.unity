@@ -1134,7 +1134,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1135878001}
   - component: {fileID: 1135878003}
-  - component: {fileID: 1135878002}
   m_Layer: 0
   m_Name: FauxCamera
   m_TagString: Untagged
@@ -1157,14 +1156,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 888999699}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!81 &1135878002
-AudioListener:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1135878000}
-  m_Enabled: 1
 --- !u!20 &1135878003
 Camera:
   m_ObjectHideFlags: 0

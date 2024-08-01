@@ -12,9 +12,7 @@ public class PillarMovement : MonoBehaviour
 
     private void Start()
     {
-        startPosition = transform.position;
-        Vector3 direction = new Vector3(Mathf.Cos(moveAngle * Mathf.Deg2Rad), Mathf.Sin(moveAngle * Mathf.Deg2Rad), 0);
-        endPosition = startPosition + direction * moveDistance;
+        InitializePositions();
     }
 
     private void Update()
@@ -35,5 +33,12 @@ public class PillarMovement : MonoBehaviour
                 movingToEnd = true;
             }
         }
+    }
+
+    public void InitializePositions()
+    {
+        startPosition = transform.position;
+        Vector3 direction = new Vector3(Mathf.Cos(moveAngle * Mathf.Deg2Rad), Mathf.Sin(moveAngle * Mathf.Deg2Rad), 0);
+        endPosition = startPosition + direction * moveDistance;
     }
 }
