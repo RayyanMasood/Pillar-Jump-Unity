@@ -7,9 +7,10 @@ public class LevelManagement : MonoBehaviour
     public Transform MainCamera;
     public float slideDuration = 2f;
     public float spawnOffset = 2f; // Increased offset to spawn player above the first child pillar
+    public int startLevelIndex = 0; // Added public variable to set the starting level index
 
     private Transform[] levels;
-    private int currentLevelIndex = 0;
+    private int currentLevelIndex;
 
     void Start()
     {
@@ -19,14 +20,59 @@ public class LevelManagement : MonoBehaviour
         for (int i = 0; i < levelCount; i++)
         {
             levels[i] = transform.GetChild(i + 1);
+            levels[i].gameObject.SetActive(false);
         }
 
-        Transform levelContainer = levels[currentLevelIndex].Find("Level");
+        // Ensure the startLevelIndex is within bounds
+        startLevelIndex = Mathf.Clamp(startLevelIndex, 0, levels.Length - 1);
+        currentLevelIndex = startLevelIndex;
+
+        // Set the initial level and spawn the player and camera
+        InitializeLevel(currentLevelIndex);
+
+        // Start the game at the specified starting level
+        StartCoroutine(StartLevel());
+    }
+
+    void InitializeLevel(int levelIndex)
+    {
+        Transform levelContainer = levels[levelIndex].Find("Level");
+        if (levelContainer == null)
+        {
+            Debug.LogError($"Level container 'Level' not found in Level {levelIndex + 1}.");
+            return;
+        }
+
+        // Activate the selected level
+        levelContainer.gameObject.SetActive(true);
+
+        // Set player position above the first child pillar of the current level
         Transform firstChild = levelContainer.childCount > 0 ? levelContainer.GetChild(0) : null;
+        if (firstChild == null)
+        {
+            Debug.LogError($"First child of 'Level' not found in Level {levelIndex + 1}.");
+            return;
+        }
+
         player.position = firstChild.position + Vector3.up * spawnOffset;
 
-        // Start the game at the first level
-        StartCoroutine(StartLevel());
+        // Update initial position and rotation for the player
+        var playerController = player.GetComponent<PlayerController_re>();
+        if (playerController != null)
+        {
+            playerController.initialPosition = firstChild.position + Vector3.up * spawnOffset;
+            playerController.initialRotation = player.rotation;
+        }
+
+        // Set the camera position to the center point of the current level
+        Transform centerPoint = levelContainer.Find("CenterPoint");
+        if (centerPoint == null)
+        {
+            Debug.LogError($"CenterPoint not found in Level {levelIndex + 1}.");
+            return;
+        }
+
+        MainCamera.position = new Vector3(centerPoint.position.x, centerPoint.position.y, MainCamera.position.z);
     }
 
     IEnumerator StartLevel()
@@ -41,6 +87,8 @@ public class LevelManagement : MonoBehaviour
                 yield break;
             }
 
+            levelContainer.gameObject.SetActive(true);
+
             // Set the player position above the first child pillar of the current level
             Transform firstChild = levelContainer.childCount > 0 ? levelContainer.GetChild(0) : null;
             if (firstChild == null)
@@ -48,8 +96,6 @@ public class LevelManagement : MonoBehaviour
                 Debug.LogError($"First child of 'Level' not found in Level {currentLevelIndex + 1}.");
                 yield break;
             }
-
-            //player.position = firstChild.position + Vector3.up * spawnOffset;
 
             // Update initial position and rotation
             var playerController = player.GetComponent<PlayerController_re>();
@@ -70,15 +116,18 @@ public class LevelManagement : MonoBehaviour
                 yield break;
             }
 
-            // Move camera to the center of the current level
-            yield return StartCoroutine(SlideCamera(centerPoint.position));
-
             // Wait for the player to land on the final pillar
             yield return new WaitUntil(() => playerController.isLanded &&
                                             player.parent != null && player.parent.GetComponent<Pillar>().isFinal);
 
             // Detach player from the pillar
             player.SetParent(null);
+
+            // Enable the next level before the transition
+            if (currentLevelIndex + 1 < levels.Length)
+            {
+                levels[currentLevelIndex + 1].gameObject.SetActive(true);
+            }
 
             // Move to the next level smoothly
             yield return StartCoroutine(TransitionToNextLevel());
@@ -168,11 +217,6 @@ public class LevelManagement : MonoBehaviour
             }
         }
 
-        // Enable the next level before the transition
-        levels[currentLevelIndex + 1].gameObject.SetActive(true);
-
-        //player.SetParent(nextFirstChild);
-
         // Slide the camera to the next level's center point
         yield return StartCoroutine(SlideCamera(nextCenterPoint.position));
 
@@ -183,6 +227,7 @@ public class LevelManagement : MonoBehaviour
             playerController.initialPosition = nextFirstChild.position + Vector3.up * spawnOffset;
             playerController.initialRotation = player.rotation;
         }
+
         // Disable the previous level after the transition
         levels[currentLevelIndex].gameObject.SetActive(false);
     }
@@ -194,7 +239,6 @@ public class LevelManagement : MonoBehaviour
         {
             if (levels[i] != null && i == currentLevelIndex)
             {
-                //Debug.Log("Setting " + i);
                 levels[i].gameObject.SetActive(true);
             }
         }
