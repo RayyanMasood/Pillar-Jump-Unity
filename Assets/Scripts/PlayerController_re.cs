@@ -29,6 +29,15 @@ public class PlayerController_re : MonoBehaviour
     // Reference to the last pillar touched
     private Collider2D lastPillarTouched;
 
+    // Audio source for playing landing sounds
+    private AudioSource audioSource;
+
+    // Array to hold landing sounds
+    public AudioClip[] landingSounds;
+
+    // List to hold preloaded audio clips
+    private List<AudioClip> preloadedLandingSounds;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -44,6 +53,22 @@ public class PlayerController_re : MonoBehaviour
 
         // Ensure the material color is set
         launchLine.material.color = lineColor;
+
+        // Initialize the audio source
+        audioSource = gameObject.AddComponent<AudioSource>();
+        audioSource.playOnAwake = false; // Ensure the audio source does not play on awake
+        audioSource.spatialBlend = 0f; // Ensure the audio is 2D and not affected by 3D spatial settings
+
+        // Load all landing sounds from the Resources folder
+        landingSounds = Resources.LoadAll<AudioClip>("Sounds/Landing");
+
+        // Preload audio clips into memory
+        preloadedLandingSounds = new List<AudioClip>(landingSounds.Length);
+        foreach (var clip in landingSounds)
+        {
+            clip.LoadAudioData();
+            preloadedLandingSounds.Add(clip);
+        }
     }
 
     // Update is called once per frame
@@ -166,6 +191,8 @@ public class PlayerController_re : MonoBehaviour
 
         if (isAligned)
         {
+            // Play a random landing sound immediately
+            PlayRandomLandingSound();
             Debug.Log("Proper angle");
             Player.constraints = RigidbodyConstraints2D.FreezeAll; // Freeze position and rotation
             isLanded = true;
@@ -191,7 +218,7 @@ public class PlayerController_re : MonoBehaviour
     }
 
     void OnTriggerEnter2D(Collider2D other)
-    {   
+    {
         if (other.CompareTag("Top Collider"))
         {
             Debug.Log("Touched top collider");
@@ -227,7 +254,6 @@ public class PlayerController_re : MonoBehaviour
         transform.SetParent(null); // Detach from any parent
         GameManager.Instance.IncrementRespawnCount();
         isLanded = false;
-        
     }
 
     // Method to rotate the player by angleIncrement degrees
@@ -236,6 +262,16 @@ public class PlayerController_re : MonoBehaviour
         if (!inInfluence)
         {
             transform.Rotate(0, 0, angleIncrement);
+        }
+    }
+
+    private void PlayRandomLandingSound()
+    {
+        if (preloadedLandingSounds.Count > 0)
+        {
+            int randomIndex = Random.Range(0, preloadedLandingSounds.Count);
+            audioSource.clip = preloadedLandingSounds[randomIndex];
+            audioSource.Play();
         }
     }
 }
