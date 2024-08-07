@@ -906,6 +906,12 @@ MonoBehaviour:
   lineWidth: 0.1
   lineColor: {r: 1, g: 1, b: 1, a: 1}
   angleIncrement: 45
+  abilityManager: {fileID: 0}
+  isLanded: 0
+  initialPosition: {x: 0, y: 0, z: 0}
+  initialRotation: {x: 0, y: 0, z: 0, w: 0}
+  initialGravity: 0
+  landingSounds: []
 --- !u!231 &3606892501708013046
 SpringJoint2D:
   m_ObjectHideFlags: 0

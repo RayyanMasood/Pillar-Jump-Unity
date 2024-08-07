@@ -6,6 +6,7 @@ public class TrajectoryManager : MonoBehaviour
     public static TrajectoryManager Instance { get; private set; }
     public GameObject dotPrefab;
     public bool enableDottedTrajectory = false; // Toggle for enabling/disabling the dotted trajectory
+    public bool enableLandingDot = false; // Toggle for enabling/disabling the landing dot
     public int numberOfDots = 20;
     public float dotSpacing = 0.1f;
     public float dotTransparency = 0.5f;
@@ -86,7 +87,10 @@ public class TrajectoryManager : MonoBehaviour
             if (hit.collider != null && !hit.collider.isTrigger)
             {
                 Debug.Log("Raycast hit: " + hit.collider.name + " at position: " + hit.point);
-                CreateDot(hit.point); // Create a dot at the collision point
+                if (enableLandingDot)
+                {
+                    CreateDot(hit.point); // Create a dot at the collision point if enabled
+                }
                 return hit.point;
             }
 

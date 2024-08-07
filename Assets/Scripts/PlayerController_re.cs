@@ -11,6 +11,7 @@ public class PlayerController_re : MonoBehaviour
     public float lineWidth = 0.1f;  // Expose line width
     public Color lineColor = Color.white;  // Expose line color
     public float angleIncrement = 45f;  // Angle increment for rotation and alignment
+    public AbilityManager abilityManager;
 
     private Vector2 startPos;
     private Vector2 endPos;
@@ -204,11 +205,26 @@ public class PlayerController_re : MonoBehaviour
 
             // Set the player as a child of the pillar
             transform.SetParent(other.transform.parent);
+
+            // Check if the player is fully within the top bounds of the pillar before activating the ability
+            if (IsFullyOnTop(other))
+            {
+                abilityManager.ActivateRandomAbility();
+            }
         }
         else
         {
             Player.constraints = RigidbodyConstraints2D.None; // Allow the player to adjust position
         }
+    }
+
+    private bool IsFullyOnTop(Collider2D other)
+    {
+        float playerX = transform.position.x;
+        float pillarX = other.transform.position.x;
+        float halfPillarWidth = other.bounds.size.x / 2;
+
+        return playerX >= (pillarX - halfPillarWidth) && playerX <= (pillarX + halfPillarWidth);
     }
 
     private bool IsInCameraBounds()
