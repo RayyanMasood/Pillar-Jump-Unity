@@ -29,6 +29,9 @@ public class PlayerController_re : MonoBehaviour
 
     // Reference to the last pillar touched
     private Collider2D lastPillarTouched;
+    private Collider2D lastPillar; // Track the last pillar landed on
+    private bool isFirstLoad = true; // Track if it's the first load
+    private bool isRespawning = false; // Track if the player is respawning
 
     // Audio source for playing landing sounds
     private AudioSource audioSource;
@@ -207,10 +210,14 @@ public class PlayerController_re : MonoBehaviour
             transform.SetParent(other.transform.parent);
 
             // Check if the player is fully within the top bounds of the pillar before activating the ability
-            if (IsFullyOnTop(other))
+            if (IsFullyOnTop(other) && (!isRespawning && other != lastPillar))
             {
                 abilityManager.ActivateRandomAbility();
+                lastPillar = other; // Update the last pillar landed on
             }
+
+            // Reset the respawn flag after the first landing
+            isRespawning = false;
         }
         else
         {
@@ -270,6 +277,8 @@ public class PlayerController_re : MonoBehaviour
         transform.SetParent(null); // Detach from any parent
         GameManager.Instance.IncrementRespawnCount();
         isLanded = false;
+        lastPillar = null; // Reset the last pillar on respawn
+        isRespawning = true; // Set respawn flag on respawn
     }
 
     // Method to rotate the player by angleIncrement degrees
