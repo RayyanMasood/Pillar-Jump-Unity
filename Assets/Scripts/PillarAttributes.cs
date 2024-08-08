@@ -3,10 +3,8 @@ using UnityEngine;
 public class Pillar : MonoBehaviour
 {
     public bool isFinal = false;
-    public bool hasPersonToSave = false;
     public bool isActive = true;
-    public Sprite personSprite;
-    public GameObject personObject;
+  
 
     private Collider2D topCollider;
     private SpriteRenderer spriteRenderer;
@@ -29,37 +27,18 @@ public class Pillar : MonoBehaviour
         UpdateIndicatorState();
 
 
-        if (hasPersonToSave)
-        {
-            CreatePerson();
-        }
     }
 
-    private void CreatePerson()
+    private void Update()
     {
-        if (personSprite != null)
-        {
-            personObject = new GameObject("Person");
-            SpriteRenderer personRenderer = personObject.AddComponent<SpriteRenderer>();
-            personRenderer.sprite = personSprite;
-            personObject.transform.SetParent(topCollider.transform);
-            personObject.transform.localPosition = Vector3.zero;
-        }
+        UpdateIndicatorState();
     }
 
-    public void SavePerson()
-    {
-        if (hasPersonToSave && personObject != null)
-        {
-            Destroy(personObject);
-            hasPersonToSave = false;
-            // Implement score increment logic here
-        }
-    }
+
 
     private void UpdateIndicatorState()
     {
-        if (isFinal && !isActive)
+        if (!isActive)
         {
             spriteRenderer.color = finalColor;
             sideIndicator.SetActive(false);
