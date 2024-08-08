@@ -9,15 +9,18 @@ public class LevelManagement : MonoBehaviour
     public float slideDuration = 2f;
     public float spawnOffset = 2f; // Increased offset to spawn player above the first child pillar
     public int startLevelIndex = 0; // Added public variable to set the starting level index
+    public AudioClip successSound; // Added public variable for success sound
 
     private Transform[] levels;
     private int currentLevelIndex;
     private List<Person> personsInLevel;
     private Pillar finalPillar;
+    private AudioSource audioSource; // Added AudioSource component
 
     void Start()
     {
         personsInLevel = new List<Person>();
+        audioSource = GetComponent<AudioSource>(); // Get the AudioSource component
 
         // Initialize levels by ignoring the first child (Player)
         int levelCount = transform.childCount - 1;
@@ -84,7 +87,6 @@ public class LevelManagement : MonoBehaviour
         // Set player position above the first child pillar of the current level
         if (firstLoad == true)
         {
-
             player.position = firstChild.position + Vector3.up * spawnOffset;
         }
 
@@ -115,6 +117,12 @@ public class LevelManagement : MonoBehaviour
         {
             finalPillar.SetActiveState(true);
             Debug.Log("All persons saved, final pillar activated");
+
+            // Play success sound
+            if (successSound != null && audioSource != null)
+            {
+                audioSource.PlayOneShot(successSound);
+            }
         }
     }
 
@@ -147,7 +155,6 @@ public class LevelManagement : MonoBehaviour
                 Debug.LogError("PlayerController_re component not found on player.");
                 yield break;
             }
-
 
             playerController.initialPosition = firstChild.position + Vector3.up * spawnOffset;
             playerController.initialRotation = player.rotation;

@@ -12,6 +12,7 @@ public class PlayerController_re : MonoBehaviour
     public Color lineColor = Color.white;  // Expose line color
     public float angleIncrement = 45f;  // Angle increment for rotation and alignment
     public AbilityManager abilityManager;
+    public AudioClip errorSound; // Public variable for error sound
 
     private Vector2 startPos;
     private Vector2 endPos;
@@ -33,15 +34,15 @@ public class PlayerController_re : MonoBehaviour
     private bool isFirstLoad = true; // Track if it's the first load
     private bool isRespawning = false; // Track if the player is respawning
 
-    // Audio source for playing landing sounds
-    private AudioSource audioSource;
+    // Audio sources for playing different sounds
+    private AudioSource landingAudioSource;
+    private AudioSource errorAudioSource;
 
     // Array to hold landing sounds
     public AudioClip[] landingSounds;
 
     // List to hold preloaded audio clips
     private List<AudioClip> preloadedLandingSounds;
-
 
     // Start is called before the first frame update
     void Start()
@@ -59,10 +60,13 @@ public class PlayerController_re : MonoBehaviour
         // Ensure the material color is set
         launchLine.material.color = lineColor;
 
-        // Initialize the audio source
-        audioSource = gameObject.AddComponent<AudioSource>();
-        audioSource.playOnAwake = false; // Ensure the audio source does not play on awake
-        audioSource.spatialBlend = 0f; // Ensure the audio is 2D and not affected by 3D spatial settings
+        // Initialize the audio sources
+        landingAudioSource = gameObject.AddComponent<AudioSource>();
+        errorAudioSource = gameObject.AddComponent<AudioSource>();
+        landingAudioSource.playOnAwake = false;
+        errorAudioSource.playOnAwake = false;
+        landingAudioSource.spatialBlend = 0f; // Ensure the audio is 2D
+        errorAudioSource.spatialBlend = 0f; // Ensure the audio is 2D
 
         // Load all landing sounds from the Resources folder
         landingSounds = Resources.LoadAll<AudioClip>("Sounds/Landing");
@@ -268,6 +272,8 @@ public class PlayerController_re : MonoBehaviour
 
     private void Respawn()
     {
+        PlayErrorSound(); // Play error sound
+
         transform.SetPositionAndRotation(initialPosition, initialRotation);
         Player.velocity = Vector2.zero;
         Player.angularVelocity = 0f;
@@ -296,8 +302,17 @@ public class PlayerController_re : MonoBehaviour
         if (preloadedLandingSounds.Count > 0)
         {
             int randomIndex = Random.Range(0, preloadedLandingSounds.Count);
-            audioSource.clip = preloadedLandingSounds[randomIndex];
-            audioSource.Play();
+            landingAudioSource.clip = preloadedLandingSounds[randomIndex];
+            landingAudioSource.Play();
+        }
+    }
+
+    private void PlayErrorSound()
+    {
+        if (errorSound != null)
+        {
+            errorAudioSource.clip = errorSound;
+            errorAudioSource.Play();
         }
     }
 }
