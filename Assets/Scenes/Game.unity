@@ -3360,7 +3360,7 @@ MonoBehaviour:
   MainCamera: {fileID: 519420032}
   slideDuration: 0.6
   spawnOffset: 4
-  startLevelIndex: 6
+  startLevelIndex: 0
   successSound: {fileID: 8300000, guid: 282a4902cdf72d3449b95ea268daa1e9, type: 3}
 --- !u!82 &1029034126
 AudioSource:

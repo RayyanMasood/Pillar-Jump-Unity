@@ -39,7 +39,7 @@ public class AbilityManager : MonoBehaviour
 
                 if (abilityTimerText != null)
                 {
-                    abilityTimerText.text = "Ability Time Left: " + Mathf.Ceil(abilityTimeLeft).ToString() + "s";
+                    abilityTimerText.text = "Landing Dot Time Left: " + Mathf.Ceil(abilityTimeLeft).ToString() + "s";
                 }
 
                 if (abilityTimeLeft <= 0)

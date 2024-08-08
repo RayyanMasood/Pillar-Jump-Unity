@@ -19,6 +19,8 @@ public class LevelManagement : MonoBehaviour
 
     void Start()
     {
+        // Set the target frame rate to 120 fps
+        Application.targetFrameRate = 120;
         personsInLevel = new List<Person>();
         audioSource = GetComponent<AudioSource>(); // Get the AudioSource component
 

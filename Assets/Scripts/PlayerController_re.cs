@@ -14,6 +14,8 @@ public class PlayerController_re : MonoBehaviour
     public AbilityManager abilityManager;
     public AudioClip errorSound; // Public variable for error sound
 
+    public float launchSensitivity = 1f; // Sensitivity factor for launch force
+
     private Vector2 startPos;
     private Vector2 endPos;
 
@@ -108,7 +110,7 @@ public class PlayerController_re : MonoBehaviour
         {
             endPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             TrajectoryManager.Instance.DrawLine(startPos, endPos, launchLine, lineWidth, lineColor);
-            Vector2 hitPosition = TrajectoryManager.Instance.DisplayTrajectory(startPos, endPos, transform.position, Player, maxLaunchForce);
+            Vector2 hitPosition = TrajectoryManager.Instance.DisplayTrajectory(startPos, endPos, transform.position, Player, maxLaunchForce, launchSensitivity); // Pass launchSensitivity
             UIManager.Instance.UpdateAimIndicator(hitPosition);
         }
 
@@ -126,7 +128,7 @@ public class PlayerController_re : MonoBehaviour
     {
         Vector2 direction = start - end;
         float distance = direction.magnitude;
-        Vector2 force = direction.normalized * Mathf.Clamp(distance, 0, maxLaunchForce);
+        Vector2 force = direction.normalized * Mathf.Clamp(distance * launchSensitivity, 0, maxLaunchForce); // Apply sensitivity factor
         Player.velocity = force;
         isLaunched = true;
         isLanded = false;
@@ -314,5 +316,11 @@ public class PlayerController_re : MonoBehaviour
             errorAudioSource.clip = errorSound;
             errorAudioSource.Play();
         }
+    }
+
+    // Method to adjust the launch sensitivity
+    public void AdjustLaunchSensitivity(float newSensitivity)
+    {
+        launchSensitivity = newSensitivity;
     }
 }

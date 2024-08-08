@@ -54,11 +54,11 @@ public class TrajectoryManager : MonoBehaviour
         lineRenderer.SetPosition(1, end);
     }
 
-    public Vector2 DisplayTrajectory(Vector2 start, Vector2 end, Vector2 initialPosition, Rigidbody2D rb, float maxLaunchForce)
+    public Vector2 DisplayTrajectory(Vector2 start, Vector2 end, Vector2 initialPosition, Rigidbody2D rb, float maxLaunchForce, float launchSensitivity)
     {
         Vector2 direction = start - end;
         float distance = direction.magnitude;
-        Vector2 force = direction.normalized * Mathf.Clamp(distance, 0, maxLaunchForce);
+        Vector2 force = direction.normalized * Mathf.Clamp(distance * launchSensitivity, 0, maxLaunchForce);
 
         Vector2 pos = initialPosition;
         Vector2 velocity = force;
