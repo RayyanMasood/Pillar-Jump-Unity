@@ -39,7 +39,7 @@ public class LevelManagement : MonoBehaviour
         StartCoroutine(StartLevel());
     }
 
-    void InitializeLevel(int levelIndex)
+    void InitializeLevel(int levelIndex, bool firstLoad = true)
     {
         Transform levelContainer = levels[levelIndex].Find("Level");
         if (levelContainer == null)
@@ -63,24 +63,17 @@ public class LevelManagement : MonoBehaviour
             }
         }
 
-        // Deactivate the final pillar initially
-        if (finalPillar != null)
-        {
-            finalPillar.SetActiveState(false);
-        }
-
         // Find all persons in the level
         personsInLevel.Clear();
-        foreach (Transform child in levelContainer)
+        FindAllPersons(levelContainer, personsInLevel);
+
+        // Deactivate the final pillar if there are persons to save
+        if (finalPillar != null)
         {
-            Person person = child.GetComponent<Person>();
-            if (person != null)
-            {
-                personsInLevel.Add(person);
-            }
+            finalPillar.SetActiveState(personsInLevel.Count == 0);
+            Debug.Log($"Final pillar in level {levelIndex + 1} set to {(personsInLevel.Count == 0 ? "active" : "inactive")}");
         }
 
-        // Set player position above the first child pillar of the current level
         Transform firstChild = levelContainer.childCount > 0 ? levelContainer.GetChild(0) : null;
         if (firstChild == null)
         {
@@ -88,7 +81,12 @@ public class LevelManagement : MonoBehaviour
             return;
         }
 
-        player.position = firstChild.position + Vector3.up * spawnOffset;
+        // Set player position above the first child pillar of the current level
+        if (firstLoad == true)
+        {
+
+            player.position = firstChild.position + Vector3.up * spawnOffset;
+        }
 
         // Update initial position and rotation for the player
         var playerController = player.GetComponent<PlayerController_re>();
@@ -111,10 +109,12 @@ public class LevelManagement : MonoBehaviour
 
     public void PersonSaved(Person person)
     {
+        Debug.Log($"Person saved: {person.gameObject.name}");
         personsInLevel.Remove(person);
         if (personsInLevel.Count == 0 && finalPillar != null)
         {
             finalPillar.SetActiveState(true);
+            Debug.Log("All persons saved, final pillar activated");
         }
     }
 
@@ -147,6 +147,7 @@ public class LevelManagement : MonoBehaviour
                 Debug.LogError("PlayerController_re component not found on player.");
                 yield break;
             }
+
 
             playerController.initialPosition = firstChild.position + Vector3.up * spawnOffset;
             playerController.initialRotation = player.rotation;
@@ -263,13 +264,8 @@ public class LevelManagement : MonoBehaviour
         // Slide the camera to the next level's center point
         yield return StartCoroutine(SlideCamera(nextCenterPoint.position));
 
-        // Update the player's initial position and rotation for respawning purposes
-        var playerController = player.GetComponent<PlayerController_re>();
-        if (playerController != null)
-        {
-            playerController.initialPosition = nextFirstChild.position + Vector3.up * spawnOffset;
-            playerController.initialRotation = player.rotation;
-        }
+        // Initialize the next level
+        InitializeLevel(currentLevelIndex + 1, false);
 
         // Disable the previous level after the transition
         levels[currentLevelIndex].gameObject.SetActive(false);
@@ -290,6 +286,20 @@ public class LevelManagement : MonoBehaviour
         if (player != null)
         {
             player.gameObject.SetActive(true);
+        }
+    }
+
+    void FindAllPersons(Transform parent, List<Person> personsList)
+    {
+        foreach (Transform child in parent)
+        {
+            Person person = child.GetComponent<Person>();
+            if (person != null)
+            {
+                personsList.Add(person);
+            }
+            // Recursively search for persons in the child
+            FindAllPersons(child, personsList);
         }
     }
 }
