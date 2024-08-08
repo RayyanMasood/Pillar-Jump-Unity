@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class LevelManagement : MonoBehaviour
@@ -11,9 +12,13 @@ public class LevelManagement : MonoBehaviour
 
     private Transform[] levels;
     private int currentLevelIndex;
+    private List<Person> personsInLevel;
+    private Pillar finalPillar;
 
     void Start()
     {
+        personsInLevel = new List<Person>();
+
         // Initialize levels by ignoring the first child (Player)
         int levelCount = transform.childCount - 1;
         levels = new Transform[levelCount];
@@ -46,6 +51,35 @@ public class LevelManagement : MonoBehaviour
         // Activate the selected level
         levelContainer.gameObject.SetActive(true);
 
+        // Find the final pillar
+        finalPillar = null;
+        foreach (Transform child in levelContainer)
+        {
+            Pillar pillar = child.GetComponent<Pillar>();
+            if (pillar != null && pillar.isFinal)
+            {
+                finalPillar = pillar;
+                break;
+            }
+        }
+
+        // Deactivate the final pillar initially
+        if (finalPillar != null)
+        {
+            finalPillar.SetActiveState(false);
+        }
+
+        // Find all persons in the level
+        personsInLevel.Clear();
+        foreach (Transform child in levelContainer)
+        {
+            Person person = child.GetComponent<Person>();
+            if (person != null)
+            {
+                personsInLevel.Add(person);
+            }
+        }
+
         // Set player position above the first child pillar of the current level
         Transform firstChild = levelContainer.childCount > 0 ? levelContainer.GetChild(0) : null;
         if (firstChild == null)
@@ -73,6 +107,15 @@ public class LevelManagement : MonoBehaviour
         }
 
         MainCamera.position = new Vector3(centerPoint.position.x, centerPoint.position.y, MainCamera.position.z);
+    }
+
+    public void PersonSaved(Person person)
+    {
+        personsInLevel.Remove(person);
+        if (personsInLevel.Count == 0 && finalPillar != null)
+        {
+            finalPillar.SetActiveState(true);
+        }
     }
 
     IEnumerator StartLevel()
