@@ -19,7 +19,19 @@ public class LevelSelect : MonoBehaviour
             if (button != null)
             {
                 levelButtons.Add(button);
-                DisableButton(button);
+            }
+        }
+
+        // Disable all buttons except the first one
+        for (int i = 0; i < levelButtons.Count; i++)
+        {
+            if (i == 0)
+            {
+                EnableButton(levelButtons[i], i);
+            }
+            else
+            {
+                DisableButton(levelButtons[i]);
             }
         }
 
@@ -39,7 +51,7 @@ public class LevelSelect : MonoBehaviour
     {
         for (int i = 0; i < levelButtons.Count; i++)
         {
-            if (isUnlocked)
+            if (isUnlocked || i == 0) // Ensure the first level remains unlocked
             {
                 EnableButton(levelButtons[i], i);
             }
@@ -54,7 +66,7 @@ public class LevelSelect : MonoBehaviour
     {
         button.interactable = true;
         ColorBlock cb = button.colors;
-        cb.normalColor = Color.clear; // Set the button color back to white when enabled
+        //cb.normalColor = Color.white; // Set the button color back to white when enabled
         button.colors = cb;
 
         // Assign the LoadLevel function to the button's onClick event
@@ -65,7 +77,12 @@ public class LevelSelect : MonoBehaviour
     private void LoadLevel(int levelNumber)
     {
         // Save the selected level (optional, in case you need it in the next scene)
-        PlayerPrefs.SetInt("SelectedLevel", levelNumber);
+        GameProgress progress = new GameProgress
+        {
+            currentLevel = levelNumber,
+            respawnCounter = 0
+        };
+        SaveSystem.SaveProgress(progress);
 
         // Load the next scene in the build order
         int nextSceneIndex = SceneManager.GetActiveScene().buildIndex + 1;

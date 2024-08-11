@@ -5,7 +5,7 @@ public class BackButtonScript : MonoBehaviour
 {
     public void OnBackButtonPressed()
     {
-
+   
         // Get the current active scene's build index
         int currentSceneIndex = SceneManager.GetActiveScene().buildIndex;
 
@@ -29,10 +29,5 @@ public class BackButtonScript : MonoBehaviour
         }
     }
 
-    public void AppQuit()
-    {
-        Application.Quit();
-    }
-        
     
 }

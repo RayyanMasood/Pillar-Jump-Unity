@@ -8,13 +8,13 @@ public class MainMenu : MonoBehaviour
     // Assign these in the Unity Inspector
     public GameObject mainMenu; // The "Main" child in the canvas
     public GameObject levelSelection; // The "Level Selection" child in the canvas
+    public SaveManager saveManager;
 
     private void Start()
     {
         // Set the target frame rate to 120 fps
         Application.targetFrameRate = 120;
 
-        PlayerPrefs.SetInt("SelectedLevel", 0);
 
         // Ensure the main menu is active and level selection is inactive at the start
         mainMenu.SetActive(true);
@@ -24,6 +24,8 @@ public class MainMenu : MonoBehaviour
     public void PlayGame()
     {
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
+        Debug.Log(SaveSystem.LoadProgress().currentLevel + " " + SaveSystem.LoadProgress().respawnCounter);
+
     }
 
     public void Levels()

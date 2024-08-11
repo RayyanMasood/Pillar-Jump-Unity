@@ -1221,6 +1221,14 @@ PrefabInstance:
       propertyPath: player
       value: 
       objectReference: {fileID: 836600354}
+    - target: {fileID: 546670273991573180, guid: f4baedef5c9819846a041a881f51e3d4, type: 3}
+      propertyPath: intensity
+      value: 70
+      objectReference: {fileID: 0}
+    - target: {fileID: 546670273991573180, guid: f4baedef5c9819846a041a881f51e3d4, type: 3}
+      propertyPath: influenceRange
+      value: 7
+      objectReference: {fileID: 0}
     - target: {fileID: 5817847034418912265, guid: f4baedef5c9819846a041a881f51e3d4, type: 3}
       propertyPath: m_Name
       value: BlackHole
@@ -2704,8 +2712,8 @@ GameObject:
   - component: {fileID: 866670231}
   - component: {fileID: 866670236}
   - component: {fileID: 866670237}
-  - component: {fileID: 866670238}
   - component: {fileID: 866670239}
+  - component: {fileID: 866670240}
   m_Layer: 0
   m_Name: Managers
   m_TagString: Untagged
@@ -2906,18 +2914,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   abilityTimerText: {fileID: 630648575}
   landingDotDuration: 10
---- !u!114 &866670238
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 866670230}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 65d98ff6587c84448a6fc04a38e5d532, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &866670239
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2930,6 +2926,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 18c088d0283d46c448fbf6e3b33859c3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &866670240
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 866670230}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7ad9170c0ca77a442ae39be56dbd6b79, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  levelManagement: {fileID: 1029034125}
+  backButton: {fileID: 1775097813}
+  respawnCounterText: {fileID: 155848325}
 --- !u!4 &868847923 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 2031535974019444381, guid: deef525fe12c80040a26fb900a9a06f0, type: 3}
@@ -3367,6 +3378,7 @@ MonoBehaviour:
   spawnOffset: 4
   startLevelIndex: 0
   successSound: {fileID: 8300000, guid: 282a4902cdf72d3449b95ea268daa1e9, type: 3}
+  currentLevelIndex: 0
 --- !u!82 &1029034126
 AudioSource:
   m_ObjectHideFlags: 0
@@ -5803,7 +5815,7 @@ GameObject:
   - component: {fileID: 1775097814}
   - component: {fileID: 1775097813}
   m_Layer: 5
-  m_Name: Button
+  m_Name: Back Button
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

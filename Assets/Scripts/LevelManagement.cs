@@ -10,9 +10,9 @@ public class LevelManagement : MonoBehaviour
     public float spawnOffset = 2f; // Increased offset to spawn player above the first child pillar
     public int startLevelIndex = 0; // Added public variable to set the starting level index
     public AudioClip successSound; // Added public variable for success sound
+    public int currentLevelIndex;
 
     private Transform[] levels;
-    private int currentLevelIndex;
     private List<Person> personsInLevel;
     private Pillar finalPillar;
     private AudioSource audioSource; // Added AudioSource component
@@ -22,7 +22,9 @@ public class LevelManagement : MonoBehaviour
         // Set the target frame rate to 120 fps
         Application.targetFrameRate = 120;
 
-        startLevelIndex = PlayerPrefs.GetInt("SelectedLevel");
+        print(SaveSystem.LoadProgress().currentLevel);
+        startLevelIndex = SaveSystem.LoadProgress().currentLevel;
+        
 
         personsInLevel = new List<Person>();
         audioSource = GetComponent<AudioSource>(); // Get the AudioSource component
@@ -45,6 +47,12 @@ public class LevelManagement : MonoBehaviour
 
         // Start the game at the specified starting level
         StartCoroutine(StartLevel());
+    }
+
+    private void OnApplicationQuit()
+    {
+        // Save progress when the application quits
+        // SaveGameProgress();
     }
 
     void InitializeLevel(int levelIndex, bool firstLoad = true)
@@ -188,8 +196,10 @@ public class LevelManagement : MonoBehaviour
             // Move to the next level smoothly
             yield return StartCoroutine(TransitionToNextLevel());
 
+
             // Move to the next level index
             currentLevelIndex++;
+           
         }
 
         // Game Completed

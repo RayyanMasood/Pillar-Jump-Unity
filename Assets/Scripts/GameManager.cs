@@ -3,7 +3,7 @@ using UnityEngine;
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance { get; private set; }
-    public int RespawnCount { get; private set; }
+    public int RespawnCount;
 
     private void Awake()
     {
@@ -16,8 +16,14 @@ public class GameManager : MonoBehaviour
         {
             Destroy(gameObject);
         }
+
     }
 
+    public void Start()
+    {
+        RespawnCount = SaveSystem.LoadProgress().respawnCounter;
+    
+    }
     public void IncrementRespawnCount()
     {
         RespawnCount++;
