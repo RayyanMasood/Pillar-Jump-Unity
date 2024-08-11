@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 
@@ -5,6 +6,7 @@ public static class SaveSystem
 {
     private static string progressSave = Application.persistentDataPath + "/currentProgress.json";
     private static string unlockedLevels = Application.persistentDataPath + "/unlockedLevels.json";
+
     public static void SaveProgress(GameProgress progress)
     {
         string json = JsonUtility.ToJson(progress);
@@ -25,11 +27,42 @@ public static class SaveSystem
         }
     }
 
-    public static void UnlockLevel(GameProgress progress)
+    public static void UnlockLevel(int currentLevel)
     {
-        string json = JsonUtility.ToJson(progress.currentLevel);
-        File.WriteAllText(progressSave, json);
+        UnlockedLevels unlocked;
+
+        if (File.Exists(unlockedLevels))
+        {
+            string json = File.ReadAllText(unlockedLevels);
+            unlocked = JsonUtility.FromJson<UnlockedLevels>(json);
+        }
+        else
+        {
+            unlocked = new UnlockedLevels { unlockedLevelIndices = new List<int>() };
+        }
+
+        if (!unlocked.unlockedLevelIndices.Contains(currentLevel))
+        {
+            unlocked.unlockedLevelIndices.Add(currentLevel);
+            string json = JsonUtility.ToJson(unlocked);
+            File.WriteAllText(unlockedLevels, json);
+        }
     }
 
+    public static bool IsUnlocked(int levelIndex)
+    {
+        if (File.Exists(unlockedLevels))
+        {
+            string json = File.ReadAllText(unlockedLevels);
+            UnlockedLevels unlocked = JsonUtility.FromJson<UnlockedLevels>(json);
+            return unlocked.unlockedLevelIndices.Contains(levelIndex);
+        }
+        return false;
+    }
+}
 
+[System.Serializable]
+public class UnlockedLevels
+{
+    public List<int> unlockedLevelIndices;
 }

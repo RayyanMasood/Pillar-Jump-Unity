@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class LevelManagement : MonoBehaviour
 {
@@ -143,6 +144,11 @@ public class LevelManagement : MonoBehaviour
     {
         while (currentLevelIndex < levels.Length)
         {
+            if (!SaveSystem.IsUnlocked(currentLevelIndex))
+            {
+                SaveSystem.UnlockLevel(currentLevelIndex);
+            }
+
             // Get the current level (LevelK -> Level)
             Transform levelContainer = levels[currentLevelIndex].Find("Level");
             if (levelContainer == null)
@@ -199,6 +205,8 @@ public class LevelManagement : MonoBehaviour
 
             // Move to the next level index
             currentLevelIndex++;
+            
+
            
         }
 

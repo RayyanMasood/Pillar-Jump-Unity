@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -7,11 +8,13 @@ public class LevelSelect : MonoBehaviour
 {
     public GameObject levelsContainer; // The "Levels" child containing all level buttons
     public Toggle unlockAllToggle; // The toggle for enabling all levels
-
     private List<Button> levelButtons = new List<Button>();
+    private string saveFilePath;
 
     private void Start()
     {
+        saveFilePath = Application.persistentDataPath + "/unlockedLevels.json";
+
         // Get all the buttons in the Levels container
         foreach (Transform levelButton in levelsContainer.transform)
         {
@@ -34,6 +37,9 @@ public class LevelSelect : MonoBehaviour
                 DisableButton(levelButtons[i]);
             }
         }
+
+        // Load and apply unlocked levels from the JSON file
+        LoadUnlockedLevels();
 
         // Add listener for the unlock all toggle
         unlockAllToggle.onValueChanged.AddListener(delegate { ToggleAllLevels(unlockAllToggle.isOn); });
@@ -66,7 +72,7 @@ public class LevelSelect : MonoBehaviour
     {
         button.interactable = true;
         ColorBlock cb = button.colors;
-        //cb.normalColor = Color.white; // Set the button color back to white when enabled
+        cb.normalColor = Color.clear; // Set the button color back to white when enabled
         button.colors = cb;
 
         // Assign the LoadLevel function to the button's onClick event
@@ -93,6 +99,30 @@ public class LevelSelect : MonoBehaviour
         else
         {
             Debug.LogWarning("There is no next scene in the build order.");
+        }
+    }
+
+    private void LoadUnlockedLevels()
+    {
+        if (File.Exists(saveFilePath))
+        {
+            string json = File.ReadAllText(saveFilePath);
+            UnlockedLevels unlockedLevels = JsonUtility.FromJson<UnlockedLevels>(json);
+
+            if (unlockedLevels != null && unlockedLevels.unlockedLevelIndices != null)
+            {
+                foreach (int index in unlockedLevels.unlockedLevelIndices)
+                {
+                    if (index > 0 && index < levelButtons.Count)
+                    {
+                        EnableButton(levelButtons[index], index);
+                    }
+                }
+            }
+        }
+        else
+        {
+            Debug.LogWarning("No unlockedLevels.json file found. Only the first level will be unlocked.");
         }
     }
 }
