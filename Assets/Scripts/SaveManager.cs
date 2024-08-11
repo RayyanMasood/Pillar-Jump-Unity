@@ -35,7 +35,7 @@ public class SaveManager : MonoBehaviour
         // Set the current level and respawn counter from the saved progress
         if (progress != null)
         {
-            levelManagement.startLevelIndex = progress.currentLevel > 0 ? progress.currentLevel : SceneManager.GetActiveScene().buildIndex;
+            //levelManagement.startLevelIndex = progress.currentLevel > 0 ? progress.currentLevel : SceneManager.GetActiveScene().buildIndex;
             respawnCounter = progress.respawnCounter;
             respawnCounterText.text = respawnCounter.ToString();
         }

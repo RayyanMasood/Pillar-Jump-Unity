@@ -48,7 +48,7 @@ public class AbilityManager : MonoBehaviour
                 }
             }
 
-            activeAbility.UpdateAbility();
+            //activeAbility.UpdateAbility();
         }
     }
 

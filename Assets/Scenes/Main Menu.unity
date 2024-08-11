@@ -1247,7 +1247,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 413551545}
-  - component: {fileID: 413551546}
   - component: {fileID: 413551547}
   m_Layer: 5
   m_Name: Level Selection
@@ -1279,20 +1278,6 @@ RectTransform:
   m_AnchoredPosition: {x: 959.99994, y: 479.99997}
   m_SizeDelta: {x: 2160, y: 1080}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &413551546
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 413551544}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 53af28938758a1140aea2ff91fba80cf, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  levelsContainer: {fileID: 0}
-  unlockAllToggle: {fileID: 0}
 --- !u!114 &413551547
 MonoBehaviour:
   m_ObjectHideFlags: 0

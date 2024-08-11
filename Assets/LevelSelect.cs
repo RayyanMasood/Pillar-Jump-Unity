@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
+using UnityEngine.Assertions;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
@@ -14,6 +15,7 @@ public class LevelSelect : MonoBehaviour
     private void Start()
     {
         saveFilePath = Application.persistentDataPath + "/unlockedLevels.json";
+        Debug.Log("levelsContainer in Start method: " + levelsContainer);
 
         // Get all the buttons in the Levels container
         foreach (Transform levelButton in levelsContainer.transform)

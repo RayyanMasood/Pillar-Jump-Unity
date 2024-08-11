@@ -12,6 +12,7 @@ public class LevelManagement : MonoBehaviour
     public int startLevelIndex = 0; // Added public variable to set the starting level index
     public AudioClip successSound; // Added public variable for success sound
     public int currentLevelIndex;
+    public bool debug;
 
     private Transform[] levels;
     private List<Person> personsInLevel;
@@ -23,9 +24,10 @@ public class LevelManagement : MonoBehaviour
         // Set the target frame rate to 120 fps
         Application.targetFrameRate = 120;
 
-        print(SaveSystem.LoadProgress().currentLevel);
-        startLevelIndex = SaveSystem.LoadProgress().currentLevel;
-        
+        if (!debug)
+        {
+            startLevelIndex = SaveSystem.LoadProgress().currentLevel;
+        }
 
         personsInLevel = new List<Person>();
         audioSource = GetComponent<AudioSource>(); // Get the AudioSource component
