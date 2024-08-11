@@ -10,6 +10,7 @@ public class TrajectoryManager : MonoBehaviour
     public int numberOfDots = 20;
     public float dotSpacing = 0.1f;
     public float dotTransparency = 0.5f;
+    public float landingDotScale = 1.5f; // Scale factor for the landing dot
 
     private List<GameObject> trajectoryDots = new List<GameObject>();
     private GameObject currentDot; // Keep track of the current collision dot
@@ -115,6 +116,7 @@ public class TrajectoryManager : MonoBehaviour
         if (dotPrefab != null)
         {
             currentDot = Instantiate(dotPrefab, position, Quaternion.identity);
+            currentDot.transform.localScale *= landingDotScale; // Set the scale of the landing dot
             currentDot.SetActive(true);
         }
         else

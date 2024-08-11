@@ -2539,6 +2539,10 @@ PrefabInstance:
       propertyPath: stickingMargin
       value: 4
       objectReference: {fileID: 0}
+    - target: {fileID: 8448482789172855845, guid: 5642e3e731b1fc248bbd358e33d0ae4b, type: 3}
+      propertyPath: launchSensitivity
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -2741,6 +2745,7 @@ MonoBehaviour:
   numberOfDots: 3
   dotSpacing: 0.1
   dotTransparency: 0.5
+  landingDotScale: 1.5
 --- !u!114 &866670233
 MonoBehaviour:
   m_ObjectHideFlags: 0

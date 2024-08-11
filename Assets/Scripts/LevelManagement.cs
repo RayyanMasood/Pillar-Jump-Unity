@@ -21,6 +21,9 @@ public class LevelManagement : MonoBehaviour
     {
         // Set the target frame rate to 120 fps
         Application.targetFrameRate = 120;
+
+        startLevelIndex = PlayerPrefs.GetInt("SelectedLevel");
+
         personsInLevel = new List<Person>();
         audioSource = GetComponent<AudioSource>(); // Get the AudioSource component
 
