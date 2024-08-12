@@ -696,7 +696,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -764,6 +764,14 @@ MonoBehaviour:
   lineWidth: 0.1
   lineColor: {r: 1, g: 1, b: 1, a: 1}
   angleIncrement: 45
+  abilityManager: {fileID: 0}
+  errorSound: {fileID: 0}
+  launchSensitivity: 1
+  isLanded: 0
+  initialPosition: {x: 0, y: 0, z: 0}
+  initialRotation: {x: 0, y: 0, z: 0, w: 0}
+  initialGravity: 0
+  landingSounds: []
 --- !u!1001 &678268521
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -897,9 +905,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   dotPrefab: {fileID: 3680974940291160180, guid: 89959d0134cc15b4c969c576b587af0d, type: 3}
   enableDottedTrajectory: 0
+  enableLandingDot: 0
   numberOfDots: 300
   dotSpacing: 0.05
   dotTransparency: 0.5
+  landingDotScale: 1.5
 --- !u!114 &866670233
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -912,6 +922,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c7724cbd6213a6c4e8bbde9a3e98dea0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  RespawnCount: 0
 --- !u!114 &866670234
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1529,7 +1540,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

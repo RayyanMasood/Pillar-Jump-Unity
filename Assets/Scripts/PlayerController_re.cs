@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Rendering.Universal;
 
 public class PlayerController_re : MonoBehaviour
 {
@@ -215,6 +216,25 @@ public class PlayerController_re : MonoBehaviour
 
             // Set the player as a child of the pillar
             transform.SetParent(other.transform.parent);
+
+            // Adopt a shade of the parent pillar's color
+            SpriteRenderer pillarRenderer = other.transform.parent.GetComponent<SpriteRenderer>();
+            if (pillarRenderer != null)
+            {
+                // Get the color of the pillar
+                Color pillarColor = pillarRenderer.color;
+
+                // Apply a darker shade to the player (or any other shade logic)
+                SpriteRenderer playerRenderer = GetComponent<SpriteRenderer>();
+                playerRenderer.color = pillarColor * 1.2f; // Darken the color slightly
+
+                // Change the color of the Light 2D component
+                Light2D playerLight = GetComponentInChildren<Light2D>();
+                if (playerLight != null)
+                {
+                    playerLight.color = playerRenderer.color; // Match the light color to the player's color
+                }
+            }
 
             // Check if the player is fully within the top bounds of the pillar before activating the ability
             if (IsFullyOnTop(other) && (!isRespawning && other != lastPillar))

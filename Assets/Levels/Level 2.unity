@@ -580,9 +580,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   dotPrefab: {fileID: 3680974940291160180, guid: 89959d0134cc15b4c969c576b587af0d, type: 3}
   enableDottedTrajectory: 0
+  enableLandingDot: 0
   numberOfDots: 20
   dotSpacing: 0.1
   dotTransparency: 0.5
+  landingDotScale: 1.5
 --- !u!114 &866670233
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -595,6 +597,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c7724cbd6213a6c4e8bbde9a3e98dea0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  RespawnCount: 0
 --- !u!114 &866670234
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -876,7 +879,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
